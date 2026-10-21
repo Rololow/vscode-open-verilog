@@ -50,8 +50,14 @@ jobs:
         with:
           files: open-verilog.vsix
           generate_release_notes: true
+      - name: is the Marketplace token set
+        id: token
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+        run: |
+          if [ -n "$VSCE_PAT" ]; then echo "set=true" >> "$GITHUB_OUTPUT"; else echo "set=false" >> "$GITHUB_OUTPUT"; fi
       - name: publish to the Marketplace
-        if: ${{ secrets.VSCE_PAT != '' }}
+        if: steps.token.outputs.set == 'true'
         env:
           VSCE_PAT: ${{ secrets.VSCE_PAT }}
         run: npx vsce publish --allow-missing-repository --pat "$VSCE_PAT"
