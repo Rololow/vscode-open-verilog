@@ -1,0 +1,77 @@
+// Sample for the highlighting: open it with the extension and look at the colours.
+`define WIDTH 8
+
+config SocCfg {
+  harts = 2;
+  ram_init = "../sw/hello/hello.hex";
+  echo = false;
+}
+
+struct AxiAddr<int AW = 32, int IW = 4> { logic [IW-1:0] id; logic [AW-1:0] addr; }
+
+bundle Stream<type T> {
+  output logic valid = 0;
+  input logic ready = 1;
+  output T data;
+  fn fire() -> logic { return valid & ready; }
+}
+
+enum Op : logic [3:0] { ADD = 0, SUB = 1, AND = 'h2 }
+
+export struct DmaDesc "DMA descriptor" {
+  logic [31:0] src "source address";
+}
+
+regmap Uart "UART" {
+  CTRL @ 'h00 "Control" { en : rw [0] = 0 "Enable"; baud : rw [15:4] = 434 "Divider"; }
+  IRQ @ 'h08 strobe { done : w1c [0] "Done"; }
+}
+
+isa Mini "tiny" : opcode 4 max 32 {
+  NOP = 1 "no operation" {}
+  LD = 5 { rd : 5; ra : 5; imm : 16; }
+  LDX = 6 like LD;
+}
+
+pipeline Mac<int W = 8>(
+  input clk, input rst, input logic valid_in,
+  input logic [W-1:0] a, input logic [W-1:0] b,
+  output logic [2*W-1:0] y, output logic valid_out
+) {
+  stage mul {
+    logic [2*W-1:0] p = a * b;
+    stall_when(a == 0 && b != 0);
+  }
+  stage out { assign y = p; }
+}
+
+module Top<int N = 4, config C : SocCfg = SocCfg>(
+  input clk, input rst, slave Vec<Stream<logic [7:0]>, N> in, master Stream<logic [7:0]> out
+) {
+  val SUM_W = clog2(N) + 8;
+  reg [3:0] count;
+  enum St { IDLE, RUN }
+  fsm St state = IDLE;
+
+  memmap io "devices" {
+    UART @ 'h10000000 size 'h100 irq 10 = uart_irq compatible "ns16550a" "16550 UART";
+  }
+
+  for i in 0..N { assign in[i].ready = out.ready && count == i; }
+  Fifo<AxiAddr<32, 4>, 4> q(.clk, .rst, .in(in[0]), .out);
+
+  always_ff {
+    if (in[0].fire()) { count <= (count + 1).wrap(); }
+    $display("count %0d at %t", count, $time);
+  }
+  assign out.data = match (count) { 0: 8'hff; 1: 4'b1010 zext 8; default: 'h00 };
+  tie_off(in[1]);
+}
+
+test "counts" for Top<2> timeout 1000 {
+  send(in, 5);
+  step(3);
+  expect(count == 3, "three cycles");
+}
+
+probe watch on Top when (count == 2) limit 5 { print("count = %0d", count); }

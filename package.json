@@ -1,0 +1,52 @@
+{
+  "name": "open-verilog",
+  "displayName": "Open Verilog",
+  "description": "Syntax highlighting for Open Verilog (.ov), the SystemVerilog superset with elaboration-time values, bundles and pipelines.",
+  "version": "0.1.0",
+  "publisher": "open-verilog",
+  "engines": {
+    "vscode": "^1.60.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "keywords": [
+    "verilog",
+    "systemverilog",
+    "hdl",
+    "fpga",
+    "open verilog"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "open-verilog",
+        "aliases": [
+          "Open Verilog",
+          "ov"
+        ],
+        "extensions": [
+          ".ov"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "open-verilog",
+        "scopeName": "source.ov",
+        "path": "./syntaxes/ov.tmLanguage.json"
+      }
+    ]
+  },
+  "scripts": {
+    "build": "node tools/build-grammar.js",
+    "test": "node test/tokenize.js",
+    "package": "vsce package --allow-missing-repository --skip-license"
+  },
+  "devDependencies": {
+    "@vscode/vsce": "^3.0.0",
+    "vscode-oniguruma": "^2.0.1",
+    "vscode-textmate": "^9.0.0"
+  }
+}
