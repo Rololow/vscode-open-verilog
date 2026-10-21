@@ -1,0 +1,57 @@
+# The VS Code extension: each push builds and checks the .vsix; a tag v* publishes it on the GitHub release and, when
+# the VSCE_PAT secret is set, on the Visual Studio Marketplace.
+name: extension
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+jobs:
+  vsix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: install
+        run: npm ci
+      - name: check and test
+        run: |
+          node --check extension.js
+          npm test
+      - name: package
+        run: npx vsce package --allow-missing-repository -o open-verilog.vsix
+      - uses: actions/upload-artifact@v4
+        with:
+          name: open-verilog.vsix
+          path: open-verilog.vsix
+
+  publish:
+    needs: [vsix]
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci
+      - name: package
+        run: npx vsce package --allow-missing-repository -o open-verilog.vsix
+      - name: attach to the GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: open-verilog.vsix
+          generate_release_notes: true
+      - name: publish to the Marketplace
+        if: ${{ secrets.VSCE_PAT != '' }}
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+        run: npx vsce publish --allow-missing-repository --pat "$VSCE_PAT"

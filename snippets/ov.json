@@ -1,0 +1,105 @@
+{
+  "module": {
+    "prefix": "module",
+    "description": "Module with clock and reset",
+    "body": [
+      "module ${1:Name}<int ${2:W} = ${3:8}>(input clk, input rst, input logic [${2:W}-1:0] ${4:din}, output logic [${2:W}-1:0] ${5:dout}) {",
+      "  always_ff @(posedge clk) {",
+      "    if (rst) { ${5:dout} <= 0; } else { ${5:dout} <= ${4:din}; }",
+      "  }",
+      "}"
+    ]
+  },
+  "struct": {
+    "prefix": "struct",
+    "description": "Struct of packed fields",
+    "body": [
+      "struct ${1:Name} { logic [${2:7}:0] ${3:field}; }"
+    ]
+  },
+  "bundle": {
+    "prefix": "bundle",
+    "description": "Bundle of valid/ready signals",
+    "body": [
+      "bundle ${1:Name} {",
+      "  output Stream<${2:logic [7:0]}> ${3:data};",
+      "}"
+    ]
+  },
+  "enum": {
+    "prefix": "enum",
+    "description": "Enum with a logic width",
+    "body": [
+      "enum ${1:State} : logic [${2:2}:0] { ${3:IDLE}, ${4:RUN} }"
+    ]
+  },
+  "fsm": {
+    "prefix": "fsm",
+    "description": "Declarative fsm inside a module (the enum State must exist)",
+    "body": [
+      "fsm ${1:State} ${2:st} = ${3:IDLE} {",
+      "  ${4:ack} = 0;",
+      "  ${3:IDLE}: { if (${5:req}) goto ${6:BUSY}; }",
+      "  ${6:BUSY}: { goto ${3:IDLE}; }",
+      "}"
+    ]
+  },
+  "always_ff": {
+    "prefix": "always_ff",
+    "description": "Clocked block with reset",
+    "body": [
+      "always_ff {",
+      "  if (rst) { ${1:reg_name} <= 0; } else { ${1:reg_name} <= ${2:next}; }",
+      "}"
+    ]
+  },
+  "always_comb": {
+    "prefix": "always_comb",
+    "description": "Combinational block",
+    "body": [
+      "always_comb {",
+      "  ${1:out} = ${2:0};",
+      "}"
+    ]
+  },
+  "fn": {
+    "prefix": "fn",
+    "description": "Function returning a value",
+    "body": [
+      "fn ${1:name}(${2:a}, ${3:b}) -> logic [${4:7}:0] { return ${2:a} + ${3:b}; }"
+    ]
+  },
+  "pipeline": {
+    "prefix": "pipeline",
+    "description": "Pipeline with stages",
+    "body": [
+      "pipeline ${1:Name}(input clk, input rst, input logic valid_in, input logic [7:0] ${2:din},",
+      "                  output logic [7:0] dout, output logic valid_out) {",
+      "  stage ${3:s0} {",
+      "    logic [7:0] ${4:x} = ${2:din};",
+      "  }",
+      "  stage ${5:s1} {",
+      "    assign dout = ${4:x};",
+      "  }",
+      "}"
+    ]
+  },
+  "test": {
+    "prefix": "test",
+    "description": "Test block driving a module",
+    "body": [
+      "test \"${1:what it checks}\" for ${2:Module} {",
+      "  ${3:en} = 1;",
+      "  step(${4:3});",
+      "  expect(${5:q} == ${6:3});",
+      "}"
+    ]
+  },
+  "config": {
+    "prefix": "config",
+    "description": "Configuration with fields",
+    "body": [
+      "config ${1:Name} { ${2:width} = ${3:8}; }"
+    ]
+  }
+}

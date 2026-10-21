@@ -2,7 +2,7 @@
   "name": "open-verilog",
   "displayName": "Open Verilog",
   "description": "Syntax highlighting for Open Verilog (.ov), the SystemVerilog superset with elaboration-time values, bundles and pipelines.",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "publisher": "open-verilog",
   "engines": {
     "vscode": "^1.60.0"
@@ -37,7 +37,60 @@
         "scopeName": "source.ov",
         "path": "./syntaxes/ov.tmLanguage.json"
       }
-    ]
+    ],
+    "snippets": [
+      {
+        "language": "open-verilog",
+        "path": "./snippets/ov.json"
+      }
+    ],
+    "commands": [
+      {
+        "command": "ov.check",
+        "title": "Open Verilog: Check the file",
+        "category": "Open Verilog"
+      },
+      {
+        "command": "ov.showSystemVerilog",
+        "title": "Open Verilog: Show the SystemVerilog",
+        "category": "Open Verilog"
+      },
+      {
+        "command": "ov.build",
+        "title": "Open Verilog: Build the workspace",
+        "category": "Open Verilog"
+      },
+      {
+        "command": "ov.install",
+        "title": "Open Verilog: Install or update ovc",
+        "category": "Open Verilog"
+      },
+      {
+        "command": "ov.restartServer",
+        "title": "Open Verilog: Restart the language server",
+        "category": "Open Verilog"
+      }
+    ],
+    "configuration": {
+      "title": "Open Verilog",
+      "properties": {
+        "ov.path": {
+          "type": "string",
+          "default": "",
+          "description": "Path to the ovc compiler. Empty: the copy installed by the extension."
+        },
+        "ov.releaseUrl": {
+          "type": "string",
+          "default": "https://github.com/OWNER/REPO/releases/latest/download",
+          "description": "Where the ovc releases are downloaded from (the folder holding the binaries and SHA256SUMS)."
+        },
+        "ov.lspPath": {
+          "type": "string",
+          "default": "",
+          "description": "Path to the ovc-lsp language server. Empty: the copy installed by the extension."
+        }
+      }
+    }
   },
   "scripts": {
     "build": "node tools/build-grammar.js",
@@ -48,5 +101,22 @@
     "@vscode/vsce": "^3.0.0",
     "vscode-oniguruma": "^2.0.1",
     "vscode-textmate": "^9.0.0"
+  },
+  "main": "./extension.js",
+  "icon": "images/icon.png",
+  "activationEvents": [
+    "onLanguage:open-verilog",
+    "onCommand:ov.check",
+    "onCommand:ov.showSystemVerilog",
+    "onCommand:ov.build",
+    "onCommand:ov.install",
+    "onCommand:ov.restartServer"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/OWNER/REPO.git"
+  },
+  "dependencies": {
+    "vscode-languageclient": "^9.0.1"
   }
 }
