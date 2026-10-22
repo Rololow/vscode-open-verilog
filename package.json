@@ -81,7 +81,7 @@
         },
         "ov.releaseUrl": {
           "type": "string",
-          "default": "https://github.com/OWNER/REPO/releases/latest/download",
+          "default": "https://github.com/Rololow/open-verilog/releases/latest/download",
           "description": "Where the ovc releases are downloaded from (the folder holding the binaries and SHA256SUMS)."
         },
         "ov.lspPath": {
