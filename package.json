@@ -2,7 +2,7 @@
   "name": "open-verilog",
   "displayName": "Open Verilog",
   "description": "Syntax highlighting for Open Verilog (.ov), the SystemVerilog superset with elaboration-time values, bundles and pipelines.",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "publisher": "open-verilog",
   "engines": {
     "vscode": "^1.60.0"
