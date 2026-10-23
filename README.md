@@ -3,6 +3,10 @@
 Syntax highlighting for **Open Verilog** (`.ov`) files. Nothing else: the extension does not run `ovc`, does not
 check the code and does not start any process. It only colours the text.
 
+## Available on the Visual Studio Marketplace
+
+[![VS Marketplace](https://img.shields.io/badge/VS_Marketplace-Open_Verilog-blue.svg)](https://marketplace.visualstudio.com/items?itemName=open-verilog.open-verilog)
+
 ## What is coloured
 
 | Text | Scope |
